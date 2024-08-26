@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  font-family: 'Inter', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+.widgets {
+  @apply rounded-md bg-white shadow-md;
+}
+
+.widgets-footer {
+  @apply flex items-center justify-center border-t border-gray-300 px-8 py-3;
+}
