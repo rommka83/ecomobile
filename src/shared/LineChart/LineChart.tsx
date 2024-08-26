@@ -10,10 +10,10 @@ export function LineChart({ params }: ILineChart) {
   const line3 = useRef<SVGRectElement>(null);
 
   const [lengthline1, setLengthline1] = useState(0);
-  const [x1line2, setX1line2] = useState(0);
-  const [x2line2, setX2line2] = useState(0);
-  const [x1line3, setX1line3] = useState(0);
-  const [x2line3, setX2line3] = useState(0);
+  const [startLine2, setStartLine2] = useState(0);
+  const [lengthline2, setLengthline2] = useState(0);
+  const [startLine3, setStartLine3] = useState(0);
+  const [lengthline3, setLengthline3] = useState(0);
 
   const GAP = 3;
 
@@ -32,11 +32,11 @@ export function LineChart({ params }: ILineChart) {
     const lengthline3 = (widthParent * params[2].value) / totalValue;
 
     setLengthline1(lengthline1);
-    setX1line2(2 * GAP + lengthline1);
-    setX2line2(lengthline2);
-    setX1line3(3 * GAP + lengthline1 + lengthline2);
-    setX2line3(lengthline3);
-  }, [params, x1line2, x1line3, x2line2]);
+    setStartLine2(2 * GAP + lengthline1);
+    setLengthline2(lengthline2);
+    setStartLine3(3 * GAP + lengthline1 + lengthline2);
+    setLengthline3(lengthline3);
+  }, [params, startLine2, lengthline2]);
 
   useEffect(() => {
     gsap.to(line1.current, {
@@ -45,17 +45,17 @@ export function LineChart({ params }: ILineChart) {
     });
 
     gsap.to(line2.current, {
-      x: x1line2,
-      width: x2line2,
+      x: startLine2,
+      width: lengthline2,
       duration: 2,
     });
 
     gsap.to(line3.current, {
-      x: x1line3,
-      width: x2line3,
+      x: startLine3,
+      width: lengthline3,
       duration: 2,
     });
-  }, [lengthline1, x1line2, x1line3, x2line2, x2line3]);
+  }, [lengthline1, lengthline2, lengthline3, startLine2, startLine3]);
 
   return (
     <div ref={parent} className="flex flex-col">

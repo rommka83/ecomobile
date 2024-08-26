@@ -1,4 +1,3 @@
-import React from 'react';
 import { IMyServices } from './MyServices.types.ts';
 import { Typography } from '../../shared/Typography/index.ts';
 import { ButtonLink } from '../../shared/ButtonLink/index.ts';
