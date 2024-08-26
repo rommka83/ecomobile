@@ -1,0 +1,1 @@
+export { TabsCustom } from "./TabsCustom";

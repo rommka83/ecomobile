@@ -10,6 +10,10 @@ const paramsChart = [
 ];
 
 export function CurrentPeriodExpenses({ className }: ICurrentPeriodExpenses) {
+  const totalValue = paramsChart.reduce((acc, p) => {
+    return acc + p.value;
+  }, 0);
+
   return (
     <article className={`widgets ${className} flex flex-col`}>
       <Typography
@@ -18,11 +22,15 @@ export function CurrentPeriodExpenses({ className }: ICurrentPeriodExpenses) {
         className="border-b border-gray-300 px-8 py-3"
       />
       <div className="flex h-full flex-col p-8">
-        <Typography size="title" value="1250,66 ₽" className="flex w-full" />
+        <Typography
+          size="title"
+          value={`${totalValue} ₽`}
+          className="flex w-full"
+        />
         <LineChart params={paramsChart} />
       </div>
       <div className="widgets-footer">
-        <ButtonLink link="/detailing" name="Посмотреть все" />
+        <ButtonLink link="/expenses" name="Посмотреть все" />
       </div>
     </article>
   );

@@ -17,7 +17,7 @@ export function PackageBalances({ className }: IPackageBalances) {
         <DonutChart title="ГБ" color="#93c5fd" />
       </div>
       <div className="widgets-footer">
-        <ButtonLink link="/detailing" name="Подробнее" />
+        <ButtonLink link="/remainingPackages" name="Подробнее" />
       </div>
     </article>
   );

@@ -41,19 +41,19 @@ export function LineChart({ params }: ILineChart) {
   useEffect(() => {
     gsap.to(line1.current, {
       width: lengthline1,
-      duration: 2,
+      duration: 1,
     });
 
     gsap.to(line2.current, {
       x: startLine2,
       width: lengthline2,
-      duration: 2,
+      duration: 1,
     });
 
     gsap.to(line3.current, {
       x: startLine3,
       width: lengthline3,
-      duration: 2,
+      duration: 1,
     });
   }, [lengthline1, lengthline2, lengthline3, startLine2, startLine3]);
 

@@ -23,7 +23,7 @@ export function DonutChart({ title, total, value, color }: IDonutChart) {
     gsap.to(circle.current, {
       stroke: color ? color : '#1d4ed8',
       strokeDasharray: `${percentageInCircle} ${dash}`,
-      duration: 2,
+      duration: 1.5,
     });
   }, [total, value, color]);
 

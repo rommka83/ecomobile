@@ -1,6 +1,7 @@
 import { IMyServices } from './MyServices.types.ts';
 import { Typography } from '../../shared/Typography/index.ts';
 import { ButtonLink } from '../../shared/ButtonLink/index.ts';
+import { TabsCustom } from '../../shared/TabsCustom/index.ts';
 
 export function MyServices({ className }: IMyServices) {
   return (
@@ -10,9 +11,9 @@ export function MyServices({ className }: IMyServices) {
         size="large"
         className="border-b border-gray-300 px-8 py-3"
       />
-      <div className="flex h-full p-8"></div>
+      <TabsCustom />
       <div className="widgets-footer">
-        <ButtonLink link="/detailing" name="Посмотреть все" />
+        <ButtonLink link="/services" name="Посмотреть все" />
       </div>
     </article>
   );
