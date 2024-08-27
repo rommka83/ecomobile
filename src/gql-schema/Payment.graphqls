@@ -1,0 +1,91 @@
+extend type Query {
+    "Информация о платеже"
+    payment(id: ID!): Payment @auth(authority: "payment.pay")
+
+    """
+    Доступные для использования способы оплаты.
+    Возвращаются для номера (номера аутентифицированного аккаунта или targetMsisdn).
+    """
+    paymentAccounts(
+        """
+        Целевой номер для операции: номер аутентифицированного аккаунта или его дочерний номер.
+        Если не указан, то будет использован номер аутентифицированного аккаунта.
+        """
+        targetMsisdn: Msisdn
+    ): [PaymentAccount!] @auth(authority: "payment.pay")
+}
+
+extend type Mutation {
+    """
+    Создание заказа оплаты с помощью СБП.
+    Перед использованием следует убедиться, что этот способ оплаты доступен - в ответе `paymentAccounts` присутствует
+    `PaymentAccountSBP`.
+    """
+    paymentSBPCreate(
+        correlation: CorrelationInput!
+        params: PaymentSBPCreateParams!
+    ): PaymentSBPCreateResponse @auth(authority: "payment.pay")
+}
+
+"Абстракция аккаунта в платежной системе. Или, другими словами, способ оплаты."
+interface PaymentAccount {
+    id: ID!
+    "Название для UI"
+    name: String!
+    "Минимальная сумма оплаты в копейках"
+    amountMin: Int!
+    "Максимальная сумма оплаты в копейках"
+    amountMax: Int!
+}
+
+"Способ оплаты СБП"
+type PaymentAccountSBP implements PaymentAccount {
+    id: ID!
+    name: String!
+    amountMin: Int!
+    amountMax: Int!
+}
+
+"Платеж"
+interface Payment {
+    id: ID!
+    correlation: Correlation!
+    "Время создания"
+    createdAt: DateTime!
+    "Человеческий номер заказа (можно показать абоненту)"
+    orderNumber: String!
+    "Сумма платежа в копейках"
+    amount: Int!
+}
+
+"Платеж СБП"
+type PaymentSBP implements Payment {
+    id: ID!
+    correlation: Correlation!
+    createdAt: DateTime!
+    orderNumber: String!
+    amount: Int!
+
+    "QR-ссылка СБП"
+    paymentUrl: String!
+}
+
+"Параметры создания заказа оплаты СБП."
+input PaymentSBPCreateParams {
+    "Новый UUID создаваемого заказа"
+    paymentId: ID!
+    """
+    Целевой номер для операции: номер аутентифицированного аккаунта или его дочерний номер.
+    Если не указан, то будет использован номер аутентифицированного аккаунта.
+    """
+    targetMsisdn: Msisdn
+    "Сумма платежа в копейках"
+    amount: Int!
+}
+
+type PaymentSBPCreateResponse {
+    "UUID созданного заказа"
+    paymentId: ID!
+    "Созданный заказ"
+    payment: PaymentSBP!
+}

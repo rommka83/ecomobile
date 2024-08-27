@@ -1,0 +1,55 @@
+extend type Mutation {
+    """
+    Выдача обещанного платежа.
+    """
+    promisedPaymentIssue(
+        correlation: CorrelationInput!
+        params: PromisedPaymentIssueParams!
+    ): PromisedPaymentIssueResponse @authUser
+}
+
+"Параметры подключения обещанного платежа"
+input PromisedPaymentIssueParams {
+    """
+    Дочерний номер, на котором нужно подключить обещанный платёж.
+    Если не указан, услуга будет подключена на номер аутентифицированного аккаунта.
+    """
+    targetMsisdn: Msisdn
+}
+
+type PromisedPaymentIssueResponse {
+    correlation: Correlation!
+}
+
+interface PromisedPayment {
+    "Сумма"
+    sum: Float!
+    "Крайний срок погашения обещанного платежа"
+    deadline: DateTime!
+    "Стоимость"
+    cost: Int!
+}
+
+type PromisedPaymentAvailable implements PromisedPayment {
+    "Сумма"
+    sum: Float!
+    "Крайний срок погашения обещанного платежа"
+    deadline: DateTime!
+    "Стоимость"
+    cost: Int!
+    "Описание условий данного обещанного платежа. Формат Markdown."
+    description: String!
+}
+
+type PromisedPaymentInfo {
+    """
+    Доступный обещанный платеж
+    Null - обещанный платёж недоступен
+    """
+    available: PromisedPaymentAvailable
+    """
+    Описание общих правил предоставления обещанного платежа
+    Разметка markdown.
+    """
+    rules: String!
+}

@@ -1,0 +1,97 @@
+"Расходы по номеру"
+type NumberExpenses {
+    "Месяцы, для которых доступны данные о расходах"
+    availableMonths: [YearMonth!]!
+    "Расходы за месяц. Null - данные о расходах за этот месяц не доступны."
+    month(year: Int!, month: Int!): ExpenseMonth
+}
+
+"Период информации о расходах (календарный месяц)."
+type ExpenseMonth {
+    "Месяц"
+    month: YearMonth!
+    "Сумма расходов за период"
+    amount: ExpenseMonthAmount!
+    transactionList(
+        filter: ExpenseTransactionListFilter,
+        page: Int! = 0
+        pageSize: Int! = 50
+    ): ExpenseTransactionList!
+}
+
+"Сумма расходов за месяц"
+type ExpenseMonthAmount {
+    "Общая сумма"
+    total: Int!
+    "Группировка расходов по типам"
+    parts: [ExpenseTypedAmount!]!
+}
+
+"Сумма расходов с типом"
+type ExpenseTypedAmount {
+    "Тип расходов"
+    type: ExpenseType!
+    "Сумма"
+    amount: Int!
+}
+
+type ExpenseTransactionList {
+    total: Int!
+    nodes: [ExpenseTransaction!]!
+}
+
+input ExpenseTransactionListFilter {
+    types: [ExpenseType!]
+}
+
+"Транзакция расходов"
+type ExpenseTransaction {
+    "Время транзакции"
+    timestamp: DateTime!
+    "Тип"
+    type: ExpenseType!
+    "Наименование (описание)"
+    name: String!
+    "Сумма, коп."
+    amount: Int!
+    "Баланс после транзакции, коп."
+    balanceAfter: Int
+}
+
+"Тип расходов"
+enum ExpenseType {
+    "Минуты"
+    VOICE
+    "SMS"
+    SMS
+    "Интернет, данные"
+    DATA
+    "Услуги"
+    SERVICE
+    "Тарифный план"
+    PRICE_PLAN
+    "Платеж"
+    PAYMENT
+    "Прочие списания"
+    OTHER
+    "Неизвестное для API значение. По этому типу нельзя фильтровать."
+    UNKNOWN
+}
+
+"Пополнение основного (денежного) баланса номера"
+type BalanceTopUp {
+    "Сумма, коп."
+    amount: Int!
+    "Время транзакции"
+    timestamp: DateTime!
+    "Название способа пополнения"
+    methodName: String!
+    "Номера 'заказа', ID транзакции в платежной системе и т.д."
+    orderId: ID
+}
+
+"Список пополнений баланса"
+type BalanceTopUpList {
+    total: Int!
+    nodes: [BalanceTopUp!]!
+}

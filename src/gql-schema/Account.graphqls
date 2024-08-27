@@ -1,0 +1,93 @@
+extend type Mutation {
+    "Обновление данных аккаунта"
+    accountUpdate(data: AccountUpdate!): Account @authUser
+}
+
+"Аккаунт абонента в ЛК."
+type Account implements MsisdnIdentifier {
+    msisdn: Msisdn!
+    "Электронная почта"
+    email: String
+    "День рождения"
+    birthday: Date
+    "Пол"
+    gender: AccountGender
+    "Контактный номер телефона"
+    contactPhone: Msisdn
+    "Контактное имя (как обращаться)"
+    contactName: String
+    "Верифицирован ли контактный номер"
+    isContactPhoneVerified: Boolean!
+    "Верифицирован ли email"
+    isEmailVerified: Boolean!
+    """
+    Номер в биллинге.
+    Null - номер по какой-либо причине отвязан от аккаунта в ЛК и у абонента нет к нему доступа.
+    """
+    number: Number
+    "Список заявок"
+    requestList(
+        page: Int! = 0
+        pageSize: Int! = 20
+        order: [RequestListOrderBy!]! = [ID_DESC]
+        typeId: [ID!]! = []
+        status: [RequestStatus!]! = []
+    ): RequestList!
+    """
+    Возвращает данные по указанному номеру.
+
+    Номер может быть:
+    1) номером залогиненного аккаунта; в этом случае ответ аналогичен полю `number`;
+    2) одним из его дочерних номеров; в этом случае ответ аналогичен элементу списка `Group.numbers`;
+
+    Если номер не указан, будут возвращены данные по номеру аккаунта.
+    """
+    billingNumber(msisdn: Msisdn): BillingNumber
+    "Информация об оценке приложения"
+    feedbackInfo: FeedbackInfo!
+}
+
+"Пол"
+enum AccountGender {
+    MALE
+    FEMALE
+    "Неизвестное для API значение (исключительная ситуация)."
+    UNKNOWN__
+}
+
+"""
+Структура для обновления данных аккаунта.
+При отсутствии значения, соотв. поле не будет обновлено.
+При наличии значения, соотв. полю будет присвоено значение указанное в [Account*Update] (в т.ч. null).
+"""
+input AccountUpdate {
+    contactName: AccountContactNameUpdate
+    contactPhone: AccountContactPhoneUpdate
+    email: AccountEmailUpdate
+    birthday: AccountBirthdayUpdate
+    gender: AccountGenderUpdate
+}
+
+input AccountContactNameUpdate {
+    "Значение должно содержать хотя бы один непробельный символ"
+    value: String
+}
+
+input AccountContactPhoneUpdate {
+    "Номер телефона в зоне +7, 10 цифр"
+    value: Msisdn
+}
+
+input AccountBirthdayUpdate {
+    "Дата рождения не должна быть в будущем"
+    value: Date
+}
+
+input AccountGenderUpdate {
+    value: AccountGender
+}
+
+input AccountEmailUpdate {
+    "Значение email обязательно, его нельзя обнулить"
+    value: String!
+}

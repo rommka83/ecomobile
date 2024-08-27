@@ -1,0 +1,68 @@
+extend type Query {
+    "Список всех типов заявок"
+    requestTypes: [RequestType!]!
+}
+
+"Заявка"
+type Request {
+    "ID (номер)"
+    id: ID!
+    correlation: Correlation!
+    "Время создания"
+    createdAt: DateTime!
+    "Время обновления"
+    updatedAt: DateTime!
+    "Время обработки"
+    processedAt: DateTime
+    "ID типа"
+    typeId: ID!
+    "Тип"
+    type: RequestType!
+    "Статус"
+    status: RequestStatus!
+    "Название заявки"
+    name: String!
+    "Описание"
+    description: String!
+    "Результат рассмотрения"
+    resultMessage: String
+}
+
+"Список заявок"
+type RequestList {
+    "Заявки"
+    nodes: [Request!]!
+    "Общее количество (с учетом фильтров)"
+    total: Int!
+}
+
+"Сортировка заявок"
+enum RequestListOrderBy {
+    ID_ASC
+    ID_DESC
+}
+
+"Тип заявки"
+type RequestType {
+    id: ID!
+    "Название"
+    name: String!
+}
+
+"Статус заявки"
+enum RequestStatus {
+    "Принята"
+    PENDING,
+    "Обрабатывается"
+    PROCESSING,
+    "Выполнена"
+    OK,
+    "Ошибка"
+    ERROR,
+    "Отклонена"
+    REJECTED,
+    "Отменена"
+    CANCELED,
+    "Неизвестное для API значение (исключительная ситуация)."
+    UNKNOWN__,
+}

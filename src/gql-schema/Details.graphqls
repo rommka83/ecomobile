@@ -1,0 +1,53 @@
+extend type Query {
+    "Все форматы для заказа детализации"
+    detailsFormats: [DetailsFormat!]!
+}
+
+extend type Mutation {
+    "Заказ детализации по email"
+    detailsOrderByEmail(correlation: CorrelationInput!, params: DetailsOrderByEmailParams!): DetailsOrderByEmailResponse @auth(authority: "details.order")
+}
+
+"Мета-информация о детализации по номеру"
+type NumberDetails {
+    "Месяцы, для которых доступен заказ детализации"
+    orderAvailableMonths: [YearMonth!] @auth(authority: "details.order")
+    "Информация о последнем заказе детализации"
+    lastOrderInfo: DetailsOrderInfo @auth(authority: "details.info")
+}
+
+"Параметры заказа детализации по email"
+input DetailsOrderByEmailParams {
+    "Новый уникальный UUID"
+    requestId: ID!
+    "Месяц"
+    month: YearMonthInput!
+    "Нужный формат"
+    formatId: ID!
+    "Куда отправить детализацию"
+    email: String!
+    """
+    Дочерний номер, для которого нужно заказать детализацию.
+    Если не указан, детализация будет заказана для номера аутентифицированного аккаунта.
+    """
+    targetMsisdn: Msisdn
+}
+
+type DetailsOrderByEmailResponse {
+    requestId: ID!
+    correlation: Correlation!
+}
+
+"Формат детализации (XLSX, PDF, и т.п.)"
+type DetailsFormat {
+    id: ID!
+    name: String!
+}
+
+"Информация о заказе детализации"
+type DetailsOrderInfo {
+    "Время заказа"
+    orderTime: DateTime!
+    "Время, до которого нельзя сделать новый заказ"
+    orderTimeout: DateTime!
+}

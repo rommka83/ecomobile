@@ -1,0 +1,73 @@
+extend type Query {
+    "Проверка доступа к ЛК."
+    accessStatus(msisdn: Msisdn!): AccessStatus!
+
+    "Проверка наличия у абонента разрешений для доступа к функционалу личного кабинета."
+    accessCheck(
+        "Список разрешений, которые нужно проверить. (см. также директиву @auth)"
+        authorities: [ID!]!
+    ): AccessCheckResponse @authUser
+}
+
+extend type Mutation {
+    """
+    Создает токен доступа на основе пароля пользователя.
+    Возвращает null, если пароль не верен.
+    """
+    accessCreateToken(password: String!): AccessToken @authUser
+}
+
+type AccessStatus {
+    "Причина, по которой пользователю нельзя залогиниться."
+    signInDenyReason: AccessDenyReason
+    "Причина, по которой пользователю нельзя зарегистрироваться в ЛК."
+    signUpDenyReason: AccessDenyReason
+}
+
+enum AccessDenyReason {
+    "Номер зарегистрирован в ЛК."
+    REGISTERED
+    "Номер найден, но не зарегистрирован в ЛК."
+    NOT_REGISTERED
+    "Номеру явно запрещен доступ в ЛК."
+    FORBIDDEN
+    "Номер не найден в системе."
+    NOT_FOUND
+    "Аккаунт в ЛК для номера существует, но деактивирован. Доступ запрещен."
+    DEACTIVATED
+    "Неизвестное для API значение (исключительная ситуация)."
+    UNKNOWN__
+}
+
+"""
+Уровень доступа в личном кабинете.
+Deprecated: Для определения прав доступа следует использовать систему разрешений.
+"""
+enum AccessScope {
+    "Нет доступа"
+    NONE
+    "Полный доступ"
+    ALL
+}
+
+"""
+Токен доступа
+"""
+type AccessToken {
+    "Значение токена"
+    token: String!
+    "Время жизни токена"
+    ttl: DateTime!
+}
+
+type AccessCheckResponse {
+    results: [AccessCheckResult!]!
+}
+
+"Результат проверки разрешения абонента"
+type AccessCheckResult {
+    "Разрешение"
+    authority: ID!
+    "Есть или нет (можно/нельзя)"
+    hasAccess: Boolean!
+}

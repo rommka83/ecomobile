@@ -1,0 +1,31 @@
+extend type Query {
+    requestCustomSubject(ids: [ID!]!): [RequestCustomSubject]!
+
+    requestCustomSubjects: [RequestCustomSubject!]!
+}
+
+extend type Mutation {
+    """
+    Создание нового произвольного обращения абонента.
+    """
+    requestCustomCreate(correlation: CorrelationInput!, params: RequestCustomParams!): RequestCustomCreateResponse @authUser
+}
+
+input RequestCustomParams {
+    "Новый уникальный UUID"
+    requestId: ID!
+    "ID темы"
+    subjectId: ID!
+    "Сообщение абонента"
+    message: String!
+}
+
+type RequestCustomCreateResponse {
+    requestId: ID!
+    correlation: Correlation!
+}
+
+type RequestCustomSubject {
+    id: ID!
+    name: String!
+}

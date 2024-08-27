@@ -1,0 +1,41 @@
+# Firebase Cloud Messaging
+
+extend type Mutation {
+    "Привязывает FCM токен к аккаунту абонента. Операция идемпотентна."
+    fcmEnsureClientToken(params: FCMEnsureClientTokenParams!): FCMEnsureClientTokenResponse! @authUser @deprecated(reason: "Use `fcmEnsureClientTokenAsync`")
+    "Привязывает FCM токен к аккаунту абонента асинхронно. Операция идемпотентна."
+    fcmEnsureClientTokenAsync(params: FCMEnsureClientTokenAsyncParams!): FCMEnsureClientTokenAsyncResponse! @authUser
+}
+
+input FCMEnsureClientTokenParams {
+    "Correlation UUID"
+    correlationId: ID!
+    "Action UUID"
+    actionId: ID!
+    "FCM токен"
+    token: ID!
+}
+
+type FCMEnsureClientTokenResponse {
+    token: FCMClientToken!
+}
+
+input FCMEnsureClientTokenAsyncParams {
+    "Correlation UUID"
+    correlationId: ID!
+    "Action UUID"
+    actionId: ID!
+    "FCM токен"
+    token: ID!
+}
+
+type FCMEnsureClientTokenAsyncResponse {
+    "Время получения запроса."
+    createdAt: DateTime!
+}
+
+"Сохраненный токен"
+type FCMClientToken {
+    "UUID. ID сохраненного токена."
+    id: ID!
+}

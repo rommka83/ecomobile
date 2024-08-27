@@ -1,0 +1,62 @@
+extend type Mutation {
+  "Установка флага полного доступа в ЛК для дочернего номера"
+  groupSetFullAccess(
+    "Дочерний номер"
+    targetMsisdn: Msisdn!
+    hasFullAccess: Boolean!
+  ): GroupNumber @auth(authority: "access.manage_group")
+}
+
+"Группа номеров"
+type Group implements MoneyBalanceSupplier {
+  id: ID!
+  balance: Int!
+  "Номер в группе"
+  numbers: [GroupNumber!]!
+  "Личные отметки для группы"
+  mark: GroupMark!
+  "Название группы по умолчанию, если не задано название в `GroupMark.name`"
+  defaultName: String!
+  "Включен ли балансировщик балансов номеров"
+  isBalancerEnabled: Boolean!
+}
+
+"Номер, как участник группы номеров"
+type GroupNumber implements MsisdnIdentifier & BillingNumber & MoneyBalanceSupplier {
+  msisdn: Msisdn!
+  isActive: Boolean!
+  balance: Int!
+  payMethodType: PayMethodType!
+  pricePlan: PricePlan
+  remains: Remains
+  "Описание номера"
+  description: String
+  "Доступ в личный кабинет"
+  access: [AccessScope!]!
+    @deprecated(
+      reason: "Устаревшее свойство. Для определения прав доступа следует использовать систему разрешений."
+    )
+  "Настройка полного доступа для номера (для UI)"
+  hasFullAccess: Boolean!
+  "Рекомендованный платеж"
+  recommendedPayment: RecommendedPayment
+  services: [BillingNumberService!] @auth(authority: "service.view")
+  mobileOperator: MobileOperator
+  bonusInfo: BonusInfo @auth(authority: "bonus")
+  expenses: NumberExpenses!
+  "Личные отметки для номера"
+  mark: NumberMark!
+  balanceTopUpList(page: Int! = 0, pageSize: Int! = 50): BalanceTopUpList!
+  availablePricePlanList(
+    page: Int! = 0
+    pageSize: Int! = 50
+  ): PricePlanAvailableList!
+  "Группы, в которые входит этот номер, и в которых залогиненный номер является главным."
+  groups: [Group!]!
+  details: NumberDetails!
+  blockHelp: BlockHelp
+  "Информация об обещанных платежах"
+  promisedPaymentInfo: PromisedPaymentInfo
+  "Доступные для использования способы оплаты."
+  paymentAccounts: [PaymentAccount!] @auth(authority: "payment.pay")
+}

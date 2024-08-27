@@ -1,0 +1,42 @@
+extend type Query {
+    """
+    Проверка возможности активации комплекта номер-sim.
+    Если номер телефона не указан, будет произведен поиск комплекта только по номеру sim.
+    """
+    activationDenyReason(msisdn: Msisdn, sim: ID!): ActivationDenyReasonResponse!
+
+    "Список возможных гражданств абонента для активации"
+    activationAvailableCitizenships: [ActivationCitizenship!]!
+}
+
+type ActivationDenyReasonResponse {
+    "Номер телефона, соответствующий номеру sim."
+    msisdn: Msisdn
+    "Номер sim"
+    sim: ID!
+    "Причина активации. null - активация возможна."
+    reason: ActivationDenyReason
+    "Сообщение для абонента (UI) о причине невозможности активации. Заполняется при наличии `reason`."
+    publicMessage: String
+}
+
+"Причина невозможности активации"
+enum ActivationDenyReason {
+    "Номер уже активирован"
+    ACTIVATED
+    "Комплект (номера+sim) не найден"
+    NOT_FOUND
+    "Для этого комплекта активация невозможна безусловно."
+    UNAVAILABLE
+    "Абонентом не выполнены необходимые условия для активации."
+    PRECONDITION_FAILED
+    "Неизвестное для API значение (исключительная ситуация)."
+    UNKNOWN__
+}
+
+"Гражданство абонента для активации. Можно использовать для селектора в UI."
+type ActivationCitizenship {
+    id: ID!
+    "Наименование для UI"
+    name: String!
+}

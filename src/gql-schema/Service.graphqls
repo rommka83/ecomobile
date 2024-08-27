@@ -1,0 +1,136 @@
+extend type Mutation {
+    billingNumberServiceEnable(
+        correlation: CorrelationInput!
+        "Параметры"
+        params: BillingNumberServiceEnableParams!
+    ): BillingNumberServiceEnableResponse @auth(authority: "service.modify")
+
+    billingNumberServiceDisable(
+        correlation: CorrelationInput!
+        "Параметры"
+        params: BillingNumberServiceDisableParams!
+    ): BillingNumberServiceDisableResponse @auth(authority: "service.modify")
+}
+
+"Услуги на номере"
+union BillingNumberService = BillingNumberServiceEnabled | BillingNumberServiceAvailable
+
+"Подключенные услуги на номере (в т.ч. в процессе подключения/отключения)"
+type BillingNumberServiceEnabled implements BillingService {
+    "ID связи номер-услуга"
+    id: ID!
+    serviceId: ID!
+    name: String!
+    category: BillingServiceCategory
+    description: String
+    feeToEnable: Int
+    fee: BillingServiceFee
+    "Состояние услуги"
+    state: BillingNumberServiceState!
+    "Время запроса на подключение. Может быть в будущем."
+    enableRequestedAt: DateTime
+    "Время подключения. Может быть в будущем."
+    enabledAt: DateTime
+    "Время запроса на отключение. Может быть в будущем."
+    disableRequestedAt: DateTime
+    "Время отключения. Может быть в будущем."
+    disabledAt: DateTime
+    "Состояние услуги (подключена/отключена) нельзя менять."
+    isReadonly: Boolean!
+}
+
+"Услуги доступные для подключения на номере (с учетом тарифа, уже подключенных услуг и пр. условий)"
+type BillingNumberServiceAvailable implements BillingService {
+    serviceId: ID!
+    name: String!
+    category: BillingServiceCategory
+    description: String
+    feeToEnable: Int
+    fee: BillingServiceFee
+}
+
+"Услуга в биллинге (как самостоятельная сущность)"
+interface BillingService {
+    "ID услуги"
+    serviceId: ID!
+    "Наименование"
+    name: String!
+    "Категория"
+    category: BillingServiceCategory
+    "Описание"
+    description: String
+    "Стоимость подключения (копейки)"
+    feeToEnable: Int
+    "Абонентская плата"
+    fee: BillingServiceFee
+}
+
+"Категория услуг"
+type BillingServiceCategory {
+    "ID"
+    id: ID!
+    "Наименование"
+    name: String!
+}
+
+"Абонентская плата за услугу"
+type BillingServiceFee {
+    "Кол-во денег (в копейках)"
+    amount: Int!
+    "Тип начисления"
+    type: BillingServiceFeeType
+}
+
+"Тип начисления абонентской платы за услугу"
+enum BillingServiceFeeType {
+    "В день"
+    DAY
+    "В месяц"
+    MONTH
+}
+
+"Состояние услуги"
+enum BillingNumberServiceState {
+    "Будет подключена или отключена в будущем"
+    FUTURE
+    "Отправлен запрос на подключение"
+    ENABLE_REQUESTED
+    "Подключена"
+    ENABLED
+    "Отправлен запрос на отключение"
+    DISABLE_REQUESTED
+    "Отключена"
+    DISABLED
+    "Неизвестное для API значение (исключительная ситуация)."
+    UNKNOWN__
+}
+
+"Параметры подключения услуг"
+input BillingNumberServiceEnableParams {
+    "ID услуги (BillingNumberServiceAvailable.serviceId)"
+    availableServiceId: ID!
+    """
+    Дочерний номер, на котором нужно подключить услугу.
+    Если не указан, услуга будет подключена на номер аутентифицированного аккаунта.
+    """
+    targetMsisdn: Msisdn
+}
+
+type BillingNumberServiceEnableResponse {
+    correlation: Correlation!
+}
+
+"Параметры отключения услуг"
+input BillingNumberServiceDisableParams {
+    "ID услуги (BillingNumberServiceEnabled.id)"
+    enabledServiceId: ID!
+    """
+    Дочерний номер, на котором нужно отключить услугу.
+    Если не указан, услуга будет отключена на номере аутентифицированного аккаунта.
+    """
+    targetMsisdn: Msisdn
+}
+
+type BillingNumberServiceDisableResponse {
+    correlation: Correlation!
+}

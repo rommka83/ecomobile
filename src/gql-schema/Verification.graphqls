@@ -1,0 +1,139 @@
+extend type Query {
+    verification(id: ID!): Verification
+
+    "Последняя верификация контактного номера телефона"
+    verificationLastAccountContactPhone: VerificationSMS @authUser
+
+    "Последняя верификация электронной почты"
+    verificationLastAccountEmail: VerificationEmail @authUser
+}
+
+extend type Mutation {
+    """
+    Верификация контактного номера телефона.
+    Отправляет код подтверждения на указанный в профиле номер.
+
+    Перед отправкой запроса необходимо убедиться в наличии номера телефона и что он еще не верифицирован.
+
+    Также, с помощью запроса `verificationLastAccountContactPhone` необходимо убедиться,
+    что на данный момент не действует таймаут на создание новой верификации.
+    """
+    verificationCreateAccountContactPhone(
+        correlation: CorrelationInput!
+        params: VerificationAccountContactPhoneCreationParams!
+    ): VerificationAccountContactPhoneCreationResponse @authUser
+
+    """
+    Верификация электронной почты аккаунта.
+    Отправляет код подтверждения на указанный в профиле почтовый ящик.
+
+    Перед отправкой запроса необходимо убедиться в наличии электронной почты и что она еще не верифицирована.
+
+    Также, с помощью запроса `verificationLastAccountEmail` необходимо убедиться,
+    что на данный момент не действует таймаут на создание новой верификации.
+    """
+    verificationCreateAccountEmail(
+        correlation: CorrelationInput!
+        params: VerificationAccountEmailCreationParams!
+    ): VerificationAccountEmailCreationResponse @authUser
+
+    "Подтверждение канала связи. Ввод отправленного ранне проверочного кода."
+    verificationSubmit(
+        correlation: CorrelationInput!
+        params: VerificationSubmitParams!
+    ): VerificationSubmitResponse!
+}
+
+"Верификация канала связи"
+interface Verification {
+    id: ID!
+    "Верификация активна на данный момент"
+    isActive: Boolean!
+    "Время создания"
+    createdAt: DateTime!
+    "Срок действия. Нужно успеть прислать код проверки до этого момента."
+    deadline: DateTime!
+    "Таймаут на создание повторной проверки. До этого момента нельзя создать новую проверку того же типа."
+    timeout: DateTime!
+}
+
+"Верификация с помощью отправки кода по SMS"
+type VerificationSMS implements Verification {
+    id: ID!
+    isActive: Boolean!
+    createdAt: DateTime!
+    deadline: DateTime!
+    timeout: DateTime!
+}
+
+"Верификация с помощью отправки кода по электронной почте"
+type VerificationEmail implements Verification {
+    id: ID!
+    isActive: Boolean!
+    createdAt: DateTime!
+    deadline: DateTime!
+    timeout: DateTime!
+}
+
+"Параметры создания верификации"
+input VerificationAccountContactPhoneCreationParams {
+    "UUID верификации. Новое, уникальное значение."
+    verificationId: ID!
+}
+
+"Параметры создания верификации"
+input VerificationAccountEmailCreationParams {
+    """
+    UUID верификации. Новое, уникальное значение.
+    Клиент (приложение) должен запомнить это значение для последующей проверки кода.
+    """
+    verificationId: ID!
+}
+
+"Ответ создания верификации контактного номера телефона"
+type VerificationAccountContactPhoneCreationResponse {
+    "UUID созданной верификации"
+    verificationId: ID!
+    "Созданная верификация"
+    verification: VerificationSMS!
+}
+
+"Ответ создания верификации электронной почты"
+type VerificationAccountEmailCreationResponse {
+    "UUID созданной верификации"
+    verificationId: ID!
+    "Созданная верификация"
+    verification: VerificationEmail!
+}
+
+"Параметры проверки верификации"
+input VerificationSubmitParams {
+    "UUID созданной верификации"
+    verificationId: ID!
+    "Код проверки полученный от пользователя."
+    secret: String!
+}
+
+"Ответ проверки кода"
+type VerificationSubmitResponse {
+    "Результат проверки"
+    result: VerificationResult!
+    "Верификация"
+    verification: Verification!
+}
+
+"""
+Результат проверки.
+* [isSuccess=true, (isFinal=true)] - успешная проверка, код верен, адрес подтвержден;
+* [isSuccess=false, isFinal=false] - неправильный код проверки, пользователю следует повторить ввод;
+* [isSuccess=false, isFinal=true] - истек срок действия проверки, закончились попытки подтверждения кода, проверка была
+отменена и т.д; следует создать новую проверку по истечению таймаута;
+"""
+type VerificationResult {
+    "Сообщение пользователю (если его нужно вывести)."
+    notice: String!
+    "Была ли проверка успешной"
+    isSuccess: Boolean!
+    "Является ли результат окончательным (больше не будет меняться)"
+    isFinal: Boolean!
+}

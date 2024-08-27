@@ -1,0 +1,117 @@
+extend type Query {
+    info: Info!
+}
+
+"Статические информационные данные"
+type Info {
+    "Контакты"
+    contacts: InfoContacts
+    "Поддержка"
+    support: InfoSupport
+    "FAQ"
+    faq: InfoFaq
+    "Сообщения и тексты для UI клиентских приложений"
+    uiMessages: InfoUIMessages!
+    "Информация о приложении"
+    about: InfoAbout!
+    "Информация для раздела Клиент/Договор"
+    client: InfoClient!
+    "Информация об организации"
+    organization: InfoOrganization
+}
+
+"Часто задаваемые вопросы"
+type InfoFaq {
+    "Список вопрос-ответ"
+    items: [InfoFaqItem!]!
+}
+
+"Пара вопрос-ответ"
+type InfoFaqItem {
+    "Вопрос"
+    question: String!
+    "Ответ"
+    answer: String!
+}
+
+"Информация о поддержке абонентов"
+type InfoSupport {
+    "Телефоны"
+    phones: [InfoPhone!]!
+}
+
+"Информация о контактах компании"
+type InfoContacts {
+    "Список городов"
+    cities: [InfoContactsCity!]!
+}
+
+"Контакты компании в определенном городе"
+type InfoContactsCity {
+    "Название города"
+    name: String!
+    "Телефоны"
+    phones: [InfoPhone!]!
+    "Электронные почты"
+    emails: [InfoEmail!]!
+    "Отделения"
+    receptions: [InfoContactsReception!]!
+}
+
+"Отделение компании (для клиента)"
+type InfoContactsReception {
+    "Адрес"
+    address: String!
+    "Координаты отделения"
+    geoLocation: GeoPoint
+    "Расписание работы"
+    workTime: String
+    "'Как пройти'"
+    route: String
+}
+
+"Информация об электронной почте (одной)"
+type InfoEmail {
+    "Название (описание)"
+    name: String
+    "E-mail (abc@xyz.ru)"
+    value: String!
+}
+
+"Информация о номере телефона"
+type InfoPhone {
+    "Название (описание)"
+    name: String
+    "Номер телефона"
+    value: String!
+}
+
+"Сообщения и тексты для UI клиентских приложений"
+type InfoUIMessages {
+    "Пояснение, зачем нужно указывать Email в профиле"
+    whyNeedEmail: String
+}
+
+"Информация о приложении"
+type InfoAbout {
+    "Вдохновляющий текст о приложении. Формат Markdown."
+    text: String
+}
+
+"Информация для раздела Клиент/Договор"
+type InfoClient {
+    "Справочный текст при отсутствии договора. | Инструкция по заключению договора."
+    noContractText: String
+}
+
+"Информация об организации"
+type InfoOrganization {
+    "Юридическая информация"
+    legal: InfoOrganizationLegal
+}
+
+"Юридическая информация об организации"
+type InfoOrganizationLegal {
+    "Юридические реквизиты. Markdown."
+    requisitesText: String
+}

@@ -1,0 +1,131 @@
+"""
+Номер в биллинге.
+"""
+type Number implements MsisdnIdentifier & BillingNumber & MoneyBalanceSupplier {
+    msisdn: Msisdn!
+    "Роль номера"
+    role: NumberRole!
+    isActive: Boolean!
+    balance: Int!
+    payMethodType: PayMethodType!
+    pricePlan: PricePlan
+    remains: Remains
+    "Группы, в которых этот номер является главным."
+    groups: [Group!]!
+    "Договор"
+    contract: Contract
+    "Рекомендованный платеж"
+    recommendedPayment: RecommendedPayment
+    services: [BillingNumberService!] @auth(authority: "service.view")
+    "Кодовое слово с маской вида `а***я`. Null - если кодовое слово не установлено."
+    codewordMasked: String
+    "Регион номера (НЕ роуминг)"
+    region: Region
+    "Мобильный оператор номера"
+    mobileOperator: MobileOperator
+    bonusInfo: BonusInfo @auth(authority: "bonus")
+    expenses: NumberExpenses!
+    balanceTopUpList(
+        page: Int! = 0
+        pageSize: Int! = 50
+    ): BalanceTopUpList!
+    availablePricePlanList(
+        page: Int! = 0
+        pageSize: Int! = 50
+    ): PricePlanAvailableList!
+    details: NumberDetails!
+    blockHelp: BlockHelp
+    "Информация об обещанных платежах"
+    promisedPaymentInfo: PromisedPaymentInfo
+    "Доступные для использования способы оплаты."
+    paymentAccounts: [PaymentAccount!] @auth(authority: "payment.pay")
+}
+
+"Тип расчетов"
+enum PayMethodType {
+    "Предоплата (аванс)"
+    PREPAID
+    "Постоплата (кредит)"
+    POSTPAID
+}
+
+"Роль номера"
+enum NumberRole {
+    "Номер является главным хотя бы в одной группе"
+    CHIEF
+    "Номер состоит хотя бы в одной группе, но не является главным"
+    SUBORDINATE
+    "Номер не состоит в группах, либо состоит хотя бы в одной группе без главного номера"
+    SINGLE
+}
+
+"Номер, как сущность билинга"
+interface BillingNumber implements MsisdnIdentifier & MoneyBalanceSupplier {
+    msisdn: Msisdn!
+    "Статус номера: активен/заблокирован"
+    isActive: Boolean!
+    balance: Int!
+    "Тип расчетов"
+    payMethodType: PayMethodType!
+    "Тариф"
+    pricePlan: PricePlan
+    "Остатки по пакетам (минуты, смс, интернет)"
+    remains: Remains
+    "Рекомендованный платеж"
+    recommendedPayment: RecommendedPayment
+    """
+    Услуги.
+    null - у абонента нет прав для доступа к этим данным.
+    """
+    services: [BillingNumberService!]
+    "Мобильный оператор номера"
+    mobileOperator: MobileOperator
+    """
+    Информация о бонусах (бонусной программе).
+    null - у абонента нет прав для доступа к этим данным.
+    """
+    bonusInfo: BonusInfo
+    "Расходы по номеру"
+    expenses: NumberExpenses!
+    "История пополнений баланса. Сортируется от новых к старым."
+    balanceTopUpList(
+        page: Int! = 0
+        pageSize: Int! = 50
+    ): BalanceTopUpList!
+    "Список доступных для подключения тарифов"
+    availablePricePlanList(
+        page: Int! = 0
+        pageSize: Int! = 50
+    ): PricePlanAvailableList!
+    "Группы, в которые входит этот номер, и в которых залогиненный номер является главным."
+    groups: [Group!]!
+    "Мета-информация о детализации по номеру"
+    details: NumberDetails!
+    "Поддержка абонента в случае блокировки номера: причина блокировки, инструкция по разблокировке, советы, подсказки и т.п."
+    blockHelp: BlockHelp
+    "Информация об обещанных платежах"
+    promisedPaymentInfo: PromisedPaymentInfo
+    "Доступные для использования способы оплаты."
+    paymentAccounts: [PaymentAccount!]
+}
+
+"Географический регион"
+type Region {
+    "Наименование"
+    name: String!
+}
+
+"Мобильный оператор"
+type MobileOperator {
+    "Наименование"
+    name: String!
+}
+
+"Поддержка абонента в случае блокировки номера: причина блокировки, инструкция по разблокировке, советы, подсказки и т.п."
+type BlockHelp {
+    """
+    Короткое сообщение для абонента, например, для вывода под знаком `?`.
+    Разметка markdown.
+    """
+    hint: String
+}

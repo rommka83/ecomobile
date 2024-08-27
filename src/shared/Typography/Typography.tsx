@@ -29,6 +29,8 @@ export function Typography({ value, color, size, className }: ITypography) {
         return 'text-lg';
       case 'title':
         return 'text-2xl';
+      case 'page-title':
+        return 'text-3xl';
       default:
         return 'text-base';
     }

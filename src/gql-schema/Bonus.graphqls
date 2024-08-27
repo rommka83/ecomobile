@@ -1,0 +1,181 @@
+extend type Mutation {
+    "Подключение бонусной программы"
+    bonusActivate(
+        correlation: CorrelationInput!
+        "Параметры"
+        params: BonusActivateParams!
+    ): BonusActivateResponse @auth(authority: "bonus")
+
+    "Активация бонусной акции"
+    bonusActionActivate(
+        correlation: CorrelationInput!
+        "Параметры"
+        params: BonusActionActivateParams!
+    ): BonusActionActivateResponse @auth(authority: "bonus")
+
+    "Активация бонусной акции (синхронное создание задачи)"
+    bonusActionActivateSync(
+        correlation: CorrelationInput!
+        "Параметры"
+        params: BonusActionActivateSyncParams!
+    ): BonusActionActivateSyncResponse @auth(authority: "bonus")
+}
+
+"""
+Информация о бонусах.
+Если бонусная программа не подключена (status != ENABLED), все поля кроме status будут пустыми.
+"""
+type BonusInfo {
+    "Статус бонусной программы на номере"
+    status: BonusStatus!
+    "Текущее количество бонусов"
+    balance: Int!
+    "Бонусные акции доступные для номера"
+    actions: [BonusAction!]!
+    "Список бонусных транзакций"
+    transactionList(
+        page: Int! = 0
+        pageSize: Int! = 20
+        order: [BonusTransactionListOrderBy!]! = [ID_DESC]
+        typeId: [ID!]
+    ): BonusTransactionList!
+    "Есть активная заявка на обмен бонусов"
+    hasActiveActionRequest: Boolean!
+}
+
+"Бонусная акция - что-то, на что можно обменять бонусы."
+type BonusAction {
+    id: ID!
+    "ID типа"
+    typeId: ID!
+    "Наименование"
+    name: String!
+    "Длинное описание"
+    description: String
+    "Тип"
+    type: BonusType!
+    "Категория"
+    category: BonusActionCategory!
+    """
+    Доступно к подключению.
+    Влияет на возможность подключения (активность кнопки), а не видимость акции в списке.
+    Может зависеть от различных факторов. Например, если заявка на обмен уже отправлена.
+    """
+    isActive: Boolean!
+    "Стоимость в баллах"
+    cost: Int!
+    "Срок действия (текстовое описание)."
+    validity: String
+    "Ссылка на изображение"
+    imageUrl: String
+}
+
+"Категория бонусных акций"
+type BonusActionCategory {
+    "Наименование"
+    name: String!
+}
+
+"Тип транзакции (начисления/списания) бонусов"
+type BonusType {
+    id: ID!
+    "Наименование"
+    name: String!
+}
+
+"Список транзакций бонусов"
+type BonusTransactionList {
+    nodes: [BonusTransaction!]!
+    "Общее количество (с учетом фильтров)"
+    total: Int!
+    "Доступные значения фильтров"
+    facets: BonusTransactionFacets!
+}
+
+"Доступные значения фильтров с учетом самой фильтрации"
+type BonusTransactionFacets {
+    "Значения фильтра по типу бонусов (только ID)"
+    typeIds: [ID!]!
+    "Значения фильтра по типу бонусов"
+    types: [BonusType!]!
+}
+
+"Сортировка транзакций"
+enum BonusTransactionListOrderBy {
+    ID_ASC
+    ID_DESC
+}
+
+"Бонусная транзакция"
+type BonusTransaction {
+    id: ID!
+    "Время создания"
+    createdAt: DateTime!
+    "ID типа"
+    typeId: ID!
+    """
+    Сумма бонусов.
+    > 0 - начисление; < 0 - списание.
+    """
+    amount: Int!
+    "Тип"
+    type: BonusType!
+}
+
+"Параметры активации бонусной акции"
+input BonusActionActivateParams {
+    "ID бонусной акции"
+    bonusActionId: ID!
+    """
+    Дочерний номер, на котором нужно активировать бонусную акцию.
+    Если не указан, акция будет активирована на номере аутентифицированного аккаунта.
+    """
+    targetMsisdn: Msisdn
+}
+
+type BonusActionActivateResponse {
+    correlation: Correlation!
+}
+
+"Параметры активации бонусной акции"
+input BonusActionActivateSyncParams {
+    "Новый UUID задачи на активацию акции"
+    taskId: ID!
+    "ID бонусной акции"
+    bonusActionId: ID!
+    """
+    Дочерний номер, на котором нужно активировать бонусную акцию.
+    Если не указан, акция будет активирована на номере аутентифицированного аккаунта.
+    """
+    targetMsisdn: Msisdn
+}
+
+type BonusActionActivateSyncResponse {
+    taskId: ID!
+    correlation: Correlation!
+}
+
+"Параметры подключения бонусной программы"
+input BonusActivateParams {
+    """
+    Дочерний номер, на котором нужно подключить бонусную программы.
+    Если не указан, будет подключено на номере аутентифицированного аккаунта.
+    """
+    targetMsisdn: Msisdn
+}
+
+type BonusActivateResponse {
+    correlation: Correlation!
+}
+
+"Статус подключения бонусной программы"
+enum BonusStatus {
+    "Бонусную программу на этом номере подключить нельзя (и она отключена в данный момент)."
+    UNAVAILABLE,
+    "Бонусная программа подключена."
+    ENABLED,
+    "Бонусная программа не подключена в данный момент, но доступна для подключения на этом номере."
+    DISABLED,
+    "Бонусная программа не подключена в данный момент, но находится в процессе подключения (подана заявка)"
+    ACTIVATING,
+}

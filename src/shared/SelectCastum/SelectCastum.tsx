@@ -55,7 +55,7 @@ export function SelectCastum() {
 
   return (
     <div onClick={() => setOpen(!open)} className="relative" ref={inputBlock}>
-      <div className="pointer-events-none flex w-fit items-center rounded-md bg-white p-3">
+      <div className="pointer-events-none flex w-fit items-center rounded-md bg-white px-3 py-2">
         <input
           readOnly
           type="text"

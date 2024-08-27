@@ -1,0 +1,70 @@
+extend type Query {
+    "Схема оценок"
+    feedbackMarkScheme: FeedbackMarkScheme!
+}
+
+extend type Mutation {
+    "Изменение/добавление оценки."
+    feedbackPost(correlation: CorrelationInput!, params: FeedbackPostParams!): Feedback @auth(authority: "feedback.post")
+}
+
+type FeedbackInfo {
+    "Последняя оценка пользователя"
+    last: Feedback @auth(authority: "feedback.read")
+}
+
+"Оценка"
+type Feedback {
+    "ID"
+    id: ID!
+    "Время создания"
+    createdAt: DateTime!
+    "Оценка с учетом текущей схемы"
+    mark: Int!
+    "Комментарий"
+    comment: String
+}
+
+"""
+Схема оценок.
+Описывает значения диапазона и шкалы оценок.
+Может зависеть от Клиента (приложения).
+
+Например, схема "5 звезд" может быть описана следующим образом:
+ground=0, min=1, max=5, step=1
+или
+ground=0, min=20, max=100, step=20.
+
+Если схема позволяет, можно указывать дробное кол-во "звезд". Например, в схеме `ground=0, min=20, max=100, step=20`
+можно указать оценку "3.5 звезды" значением `70`.
+"""
+type FeedbackMarkScheme {
+    "Шаг единицы оценки"
+    step: Int!
+    "Значение минимальной оценки, которую может оставить пользователь."
+    min: Int!
+    "Значение максимальной оценки, которую может оставить пользователь."
+    max: Int!
+    "Значение нулевой оценки (обычно 0)"
+    ground: Int!
+}
+
+"Параметры создания новой оценки"
+input FeedbackPostParams {
+    "UUID новой оценки"
+    id: ID!
+    "Оценка"
+    mark: Int!
+    "Комментарий. От 2 до 500 символов."
+    comment: String
+    "Параметры приложения"
+    agentInfo: FeedbackAgentInfoParams!
+}
+
+"Параметры приложения"
+input FeedbackAgentInfoParams {
+    "Версия приложения"
+    version: String!
+    "Идентификаторы операционной системы: название, версия и т.д."
+    osIdentity: String!
+}

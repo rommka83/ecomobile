@@ -1,0 +1,39 @@
+extend type Mutation {
+    "Обновление (создание) названия номера. Если названия еще нет, оно будет создано."
+    markSetNumberName(
+        "Номер, для которого название"
+        msisdn: Msisdn!,
+        data: NumberMarkNameUpdate!
+    ): NumberMark @authUser
+
+    "Обновление (создание) названия группы. Если названия еще нет, оно будет создано."
+    markSetGroupName(
+        "Группа, для которой название"
+        groupId: ID!,
+        data: GroupMarkNameUpdate!
+    ): GroupMark @authUser
+}
+
+"Личные (для аккаунта) отметки к номеру"
+type NumberMark {
+    "Название номера"
+    name: String
+}
+
+"Личные (для аккаунта) отметки к группе номеров"
+type GroupMark {
+    "Название группы"
+    name: String
+}
+
+"Данные для обновления названия номера"
+input NumberMarkNameUpdate {
+    "Название номера. Значение будет обрезано до 20 символов."
+    value: String
+}
+
+"Данные для обновления названия группы"
+input GroupMarkNameUpdate {
+    "Название группы. Значение будет обрезано до 20 символов."
+    value: String
+}

@@ -1,0 +1,12 @@
+extend type Mutation {
+    """
+    Устанавливает новое кодовое слово.
+    Для сброса/удаления кодового слова нужно передать значение null.
+    """
+    codewordSet(token: String! @tokenAccess, codeword: String): CodewordResponse @authUser
+}
+
+type CodewordResponse {
+    "Кодовое слово"
+    codeword: String
+}

@@ -1,4 +1,4 @@
 export interface IStatus {
   name: string;
-  type: 'positive' | 'negative';
+  type: 'positive' | 'negative' | 'disabled';
 }

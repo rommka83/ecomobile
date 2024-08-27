@@ -7,15 +7,15 @@ export function Header() {
   const location = useLocation();
 
   return (
-    <header className="flex flex-col gap-3 bg-gray-200 py-3">
+    <header className="flex flex-col gap-3 bg-gray-200 py-10">
       <div className="px-10">
         <div className="flex items-center gap-3">
           <span className="">Мои номера:</span>
           <SelectCastum />
-          <button className="rounded-md bg-white p-3">
+          <button className="rounded-md bg-white p-2">
             <SvgSprite className="h-6 w-6" name="public-services" />
           </button>
-          <button className="rounded-md bg-white p-3">
+          <button className="rounded-md bg-white p-2">
             <SvgSprite className="h-6 w-6" name="bell" />
           </button>
         </div>

@@ -1,0 +1,9 @@
+"Договор"
+type Contract {
+    "Номер договора"
+    number: String
+    "Дата заключения"
+    beginDate: Date
+    "С кем заключен"
+    client: Client
+}

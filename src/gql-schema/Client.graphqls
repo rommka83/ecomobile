@@ -1,0 +1,29 @@
+"Клиент (абонент), как сторона договора"
+type Client {
+    "Информация о клиенте"
+    info: ClientInfo
+}
+
+union ClientInfo = ClientInfoLegal | ClientInfoIndividual
+
+"Информация о юридическом лице"
+type ClientInfoLegal {
+    "Наименование организации"
+    name: String
+}
+
+"Информация о физическом лице"
+type ClientInfoIndividual {
+    "Имя"
+    name: ClientIndividualName!
+}
+
+"Имя физического лица"
+type ClientIndividualName {
+    "Фамилия"
+    family: String
+    "Имя"
+    first: String
+    "Отчество"
+    patronymic: String
+}

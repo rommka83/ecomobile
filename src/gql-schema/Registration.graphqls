@@ -1,0 +1,102 @@
+extend type Query {
+    """
+    Тип регистрации в ЛК.
+    Значение `Null` следует трактовать как [AccessDenyReason.NOT_FOUND].
+    """
+    registrationType(msisdn: Msisdn!): RegistrationType
+}
+
+extend type Mutation {
+    "Создание новой регистрации ЛК (см API.md)"
+    registrationCreate(correlation: CorrelationInput!, params: RegistrationCreateParams!): RegistrationCreateResponse!
+
+    "Отправка проверочного кода для подтверждения регистрации ЛК"
+    registrationVerify(correlation: CorrelationInput!, params: RegistrationVerifyParams!): RegistrationVerifyResponse!
+
+    "Завершение регистрации ЛК, создание аккаунта"
+    registrationSubmit(correlation: CorrelationInput!, params: RegistrationSubmitParams!): RegistrationSubmitResponse!
+}
+
+"Параметры регистрации нового абонента в ЛК"
+input RegistrationCreateParams {
+    "Новый уникальный UUID"
+    registrationId: ID!
+    "Номер телефона абонента, для которого регистрируется ЛК"
+    msisdn: Msisdn!
+    """
+    Номер SIM. Запрашивается для идентификации абонента.
+    Обязательно для [RegistrationType.EMAIL].
+    """
+    sim: String
+    "Email абонента"
+    email: String!
+    "Контактное имя"
+    contactName: String!
+    "Контактный номер телефона"
+    contactPhone: Msisdn
+}
+
+type RegistrationCreateResponse {
+    """
+    Причина, по которой пользователю нельзя зарегистрироваться в ЛК.
+    Null - объект регистрации успешно создан.
+    """
+    denyReason: AccessDenyReason
+}
+
+input RegistrationVerifyParams {
+    "UUID ранее созданной регистрации"
+    registrationId: ID!
+}
+
+type RegistrationVerifyResponse {
+    "UUID созданной верификации"
+    verificationId: ID!
+    "Ссылка на саму верификацию"
+    verification: Verification!
+}
+
+input RegistrationSubmitParams {
+    "UUID ранее созданной регистрации"
+    registrationId: ID!
+}
+
+type RegistrationSubmitResponse {
+    """
+    Причина, по которой пользователю нельзя зарегистрироваться в ЛК.
+    Null - регистрация прошла успешно, аккаунт ЛК создан.
+    """
+    denyReason: AccessDenyReason
+    """
+    Фактический способ доставки пароля в результате успешной регистрации.
+    Null - если регистрации не произошло (signUpDenyReason != null).
+    """
+    passwordDeliveryType: PasswordDeliveryType
+}
+
+"Тип регистрации аккаунта ЛК"
+enum RegistrationType {
+    """
+    Аккаунт регистрируется по номеру телефона: на этот номер отправляется проверочный код, на него же отправляется
+    пароль.
+    """
+    PHONE
+    """
+    Аккаунт регистрируется по email, который вводится абонентом в форме регистрации: на этот email отправляется
+    проверочный код, на него же отправляется пароль.
+    Дополнительно, для идентификации абонента, требуется ввод номера SIM.
+    """
+    EMAIL
+    "Неизвестное для API значение (исключительная ситуация)."
+    UNKNOWN__
+}
+
+"Способ доставки пароля"
+enum PasswordDeliveryType {
+    "Пароль отправлен на email"
+    EMAIL
+    "Пароль отправлен по SMS"
+    SMS
+    "Неизвестное для API значение (исключительная ситуация)."
+    UNKNOWN__
+}

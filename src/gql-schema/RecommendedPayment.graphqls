@@ -1,0 +1,65 @@
+"Рекомендованный платеж"
+type RecommendedPayment implements MoneyBalanceSupplier & RecommendedPaymentComposite {
+    amount: Int!
+    balance: Int!
+    parts: [RecommendedPaymentPart!]!
+}
+
+"Ссылка на объект рекомендованный к оплате"
+union RecommendedPaymentLink = RecommendedPaymentLinkService | RecommendedPaymentLinkPricePlan | RecommendedPaymentLinkNumber
+
+"""
+Композит рекомендованного платежа.
+Каждая из составляющих частей рекомендованного платежа сама по себе является рекомендованным платежом и тоже может
+состоять из чего-либо.
+"""
+interface RecommendedPaymentComposite {
+    "Сумма рекомендованного платежа в минимальных единицах валюты (копейки)"
+    amount: Int!
+    "Составляющие части рекомендованного платежа"
+    parts: [RecommendedPaymentPart!]!
+}
+
+"Составляющая часть рекомендованного платежа"
+type RecommendedPaymentPart implements RecommendedPaymentComposite {
+    "Ссылка на объект рекомендованный к оплате"
+    link: RecommendedPaymentLink
+    amount: Int!
+    "Тип составляющей части"
+    type: RecommendedPaymentPartType!
+    parts: [RecommendedPaymentPart!]!
+}
+
+"Тип составляющей части рекомендованного платежа"
+enum RecommendedPaymentPartType {
+    "Баланс номера"
+    BALANCE
+    "Абонентская плата по тарифному плану"
+    BILL_PLAN_FEE
+    "Оплата смены статуса номера"
+    STATUS_FEE
+    "Абонентская плата по дополнительной услуге"
+    SERVICE_FEE
+    "Баланс группы номеров"
+    SIBLING_SLOT_BALANCE
+    "Неизвестный тип"
+    UNKNOWN__
+}
+
+"Баланс номера"
+type RecommendedPaymentLinkNumber {
+    "Номер"
+    msisdn: Msisdn!
+}
+
+"Дополнительная услуга"
+type RecommendedPaymentLinkService {
+    "Наименование услуги"
+    name: String!
+}
+
+"Тарифный план"
+type RecommendedPaymentLinkPricePlan {
+    "Наименование тарифного плана"
+    name: String!
+}

@@ -1,0 +1,43 @@
+"Общий интерфейс тарифа"
+interface BillingPricePlan {
+    id: ID!
+    "Название"
+    name: String!
+    "Описание"
+    description: String
+    "Ежемесячная абонентская плата, коп."
+    monthFee: Int
+}
+
+"""
+Подключенный на номере тариф
+"""
+type PricePlan implements BillingPricePlan {
+    id: ID!
+    "Название"
+    name: String!
+    "Описание"
+    description: String
+    "Ежемесячная абонентская плата, коп."
+    monthFee: Int
+    "Архивный"
+    isArchive: Boolean
+}
+
+"Доступный для подключения тариф"
+type PricePlanAvailable implements BillingPricePlan {
+    id: ID!
+    "Название"
+    name: String!
+    "Описание"
+    description: String
+    "Ежемесячная абонентская плата, коп."
+    monthFee: Int
+}
+
+"Список доступных для подключения тарифов"
+type PricePlanAvailableList {
+    nodes: [PricePlanAvailable!]!
+    "Общее количество (с учетом фильтров)"
+    total: Int!
+}
