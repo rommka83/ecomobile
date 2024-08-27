@@ -22,7 +22,7 @@ export function Typography({ value, color, size, className }: ITypography) {
   const sizeTw = useMemo(() => {
     switch (size) {
       case 'small':
-        return 'text-xs';
+        return 'text-sm';
       case 'medium':
         return 'text-base';
       case 'large':

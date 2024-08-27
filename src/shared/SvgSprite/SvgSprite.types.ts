@@ -16,5 +16,6 @@ export interface ISvgSprite {
     | 'down'
     | 'check'
     | 'public-services'
-    | 'bell';
+    | 'bell'
+    | 'security';
 }
