@@ -1,6 +1,6 @@
 export interface ITypography {
   className?: string;
-  value: string;
+  value: string | number;
   color?: 'primary' | 'secondary' | 'danger' | 'info' | 'white';
-  size?: 'small' | 'medium' | 'large' | 'title' | 'page-title';
+  size?: 'small' | 'medium' | 'title' | 'page-title';
 }

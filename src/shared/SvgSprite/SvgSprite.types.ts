@@ -18,5 +18,7 @@ export interface ISvgSprite {
     | 'public-services'
     | 'bell'
     | 'security'
-    | 'notepad-edit';
+    | 'notepad-edit'
+    | 'minus'
+    | 'information';
 }

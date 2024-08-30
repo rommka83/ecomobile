@@ -1,4 +1,5 @@
-import { ChildrenGroupNumbersType } from './children-group-numbers-type';
+import { GroupType } from './GroupType';
+import { BillingNumberServiceEnabled } from './ServicesType';
 
 // Номер в биллинге
 export type NumberType = {
@@ -9,10 +10,10 @@ export type NumberType = {
   payMethodType: string;
   pricePlan?: string;
   remains?: string;
-  groups: ChildrenGroupNumbersType[]; // "Группы, в которых этот номер является главным."
+  groups: GroupType[]; // "Группы, в которых этот номер является главным."
   contract?: string; // "Договор"
   recommendedPayment?: string; // "Рекомендованный платеж"
-  services: string[]; // @auth(authority: "service.view")
+  services: BillingNumberServiceEnabled[]; // @auth(authority: "service.view")
   codewordMasked?: string; // "Кодовое слово с маской вида `а***я`. Null - если кодовое слово не установлено."
   region?: string; // "Регион номера (НЕ роуминг)"
   mobileOperator?: string; // "Мобильный оператор номера"

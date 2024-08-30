@@ -5,7 +5,7 @@ export function Typography({ value, color, size, className }: ITypography) {
   const colorTw = useMemo(() => {
     switch (color) {
       case 'primary':
-        return 'text-zinc-950';
+        return 'text-zinc-800';
       case 'secondary':
         return 'text-gray-400';
       case 'danger':
@@ -22,13 +22,11 @@ export function Typography({ value, color, size, className }: ITypography) {
   const sizeTw = useMemo(() => {
     switch (size) {
       case 'small':
-        return 'text-sm';
+        return 'text-xs';
       case 'medium':
-        return 'text-base';
-      case 'large':
-        return 'text-lg';
+        return 'text-sm';
       case 'title':
-        return 'text-2xl';
+        return 'text-base';
       case 'page-title':
         return 'text-3xl';
       default:
@@ -36,5 +34,9 @@ export function Typography({ value, color, size, className }: ITypography) {
     }
   }, [size]);
 
-  return <span className={`${colorTw} ${sizeTw} ${className}`}>{value}</span>;
+  return (
+    <span className={`${colorTw} ${sizeTw} ${className} flex text-left`}>
+      {value}
+    </span>
+  );
 }

@@ -1,2 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface ITabsCustom {}
+export interface ITabsCustom {
+  headerStyle?: string;
+  bodyStyle?: string;
+  tabs: string[];
+  children: JSX.Element[] | JSX.Element[][];
+}

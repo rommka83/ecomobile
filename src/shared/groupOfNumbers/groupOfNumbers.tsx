@@ -1,13 +1,13 @@
-import React from 'react';
 import { IGroupOfNumbers } from './groupOfNumbers.types';
-import { ChildrenGroupNumbersType } from '../../types/children-group-numbers-type';
 import { Typography } from '../Typography';
 import { SvgSprite } from '../SvgSprite';
 import { Status } from '../Status';
 import { ButtonLink } from '../ButtonLink';
 import { nanoid } from 'nanoid';
+import { GroupType } from '../../types/GroupType';
+import { Table } from '../Table';
 
-const groupOfNumbers: ChildrenGroupNumbersType = [
+const groupOfNumbers: GroupType = [
   {
     id: 1,
     balance: 400,
@@ -93,7 +93,7 @@ const groupOfNumbers: ChildrenGroupNumbersType = [
 ];
 
 export function GroupOfNumbers({}: IGroupOfNumbers) {
-  return groupOfNumbers.map((item) => {
+  return groupOfNumbers.map((item, num) => {
     return (
       <div className="widgets flex flex-col py-5" key={item.id}>
         <Typography
@@ -101,91 +101,7 @@ export function GroupOfNumbers({}: IGroupOfNumbers) {
           size="title"
           className="mb-5 ml-8"
         />
-        <table className="w-full table-auto">
-          <thead>
-            <tr className="border-b border-t border-gray-300 bg-gray-100">
-              <th className="py-3 pl-8">
-                <Typography
-                  value="Номер"
-                  color="secondary"
-                  className="flex justify-start"
-                />
-              </th>
-              <th>
-                <Typography
-                  value="Тариф"
-                  color="secondary"
-                  className="flex justify-start"
-                />
-              </th>
-              <th>
-                <Typography
-                  value="Баланс"
-                  color="secondary"
-                  className="flex justify-start"
-                />
-              </th>
-              <th>
-                <Typography
-                  value="Статус"
-                  color="secondary"
-                  className="flex justify-start"
-                />
-              </th>
-              <th>
-                <Typography
-                  value="Полный доступ в ЛК"
-                  color="secondary"
-                  className="flex justify-start"
-                />
-              </th>
-              <th>
-                <Typography
-                  value="Описание"
-                  color="secondary"
-                  className="flex justify-start"
-                />
-              </th>
-              <th className="text-transparent">dd</th>
-            </tr>
-          </thead>
-          <tbody>
-            {item.numbers.map((number) => (
-              <tr className="border-b border-gray-300" key={nanoid()}>
-                <td className="py-3 pl-8">{number.msisdn}</td>
-                <td>{number.pricePlan}</td>
-                <td>
-                  <Typography
-                    value={`${number.balance} ₽`}
-                    color={number.balance < 0 ? 'danger' : 'primary'}
-                  />
-                </td>
-                <td>
-                  {
-                    <Status
-                      name={number.isActive ? 'Активен' : 'Заблокирован'}
-                      type={number.isActive ? 'positive' : 'disabled'}
-                    />
-                  }
-                </td>
-                <td>
-                  {
-                    <Status
-                      name={number.hasFullAccess ? 'Есть' : 'Нет'}
-                      type={number.hasFullAccess ? 'positive' : 'negative'}
-                    />
-                  }
-                </td>
-                <td>
-                  {<ButtonLink link={'#'} name={number.description ?? ''} />}
-                </td>
-                <td className="pr-8">
-                  {<SvgSprite name="notepad-edit" className="h-4 w-4" />}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <Table tableHeader={tableHeader} tableBody={tableBody[num]} />
         <div className="ml-8 mt-5 flex gap-2">
           <Typography value="Баланс группы" />
           <Typography value={`${item.balance}  ₽`} color="secondary" />
@@ -194,3 +110,49 @@ export function GroupOfNumbers({}: IGroupOfNumbers) {
     );
   });
 }
+
+// TODO: убрать мокки
+const tableHeader = [
+  'Номер',
+  'Тариф',
+  'Баланс',
+  'Статус',
+  'Полный доступ в ЛК',
+  'Описание',
+  '',
+];
+
+const tableBody = groupOfNumbers.map((item) => {
+  return item.numbers.map((number) => (
+    <tr className="border-b border-gray-300" key={nanoid()}>
+      <td className="py-3 pl-8">{number.msisdn}</td>
+      <td>{number.pricePlan}</td>
+      <td>
+        <Typography
+          value={`${number.balance} ₽`}
+          color={number.balance < 0 ? 'danger' : 'primary'}
+        />
+      </td>
+      <td>
+        {
+          <Status
+            name={number.isActive ? 'Активен' : 'Заблокирован'}
+            type={number.isActive ? 'positive' : 'disabled'}
+          />
+        }
+      </td>
+      <td>
+        {
+          <Status
+            name={number.hasFullAccess ? 'Есть' : 'Нет'}
+            type={number.hasFullAccess ? 'positive' : 'negative'}
+          />
+        }
+      </td>
+      <td>{<ButtonLink link={'#'} name={number.description ?? ''} />}</td>
+      <td className="pr-8">
+        {<SvgSprite name="notepad-edit" className="h-4 w-4" />}
+      </td>
+    </tr>
+  ));
+});

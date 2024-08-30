@@ -11,10 +11,14 @@
     "shared": "generate-react component"
   },
   "dependencies": {
+    "@apollo/client": "^3.11.4",
     "@headlessui/react": "^2.1.2",
     "@heroicons/react": "^2.1.5",
+    "axios": "^1.7.5",
     "generate-react-cli": "^8.4.8",
+    "graphql": "^16.9.0",
     "gsap": "^3.12.5",
+    "js-yaml": "^4.1.0",
     "nanoid": "^5.0.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -22,6 +26,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
+    "@types/js-yaml": "^4.0.9",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
@@ -36,6 +41,7 @@
     "tailwindcss": "^3.4.10",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
-    "vite": "^5.4.1"
+    "vite": "^5.4.1",
+    "vite-plugin-mkcert": "^1.17.6"
   }
 }

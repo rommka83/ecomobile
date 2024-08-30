@@ -1,5 +1,5 @@
 // "Номер, как участник группы номеров"
-export type NumberInGroupType = {
+export type GroupNumberType = {
   msisdn: number;
   isActive: boolean;
   balance: number;

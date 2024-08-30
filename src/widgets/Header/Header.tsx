@@ -3,6 +3,16 @@ import { InformMessage } from '../../shared/InformMessage/index.ts';
 import { SelectCastum } from '../../shared/SelectCastum/index.ts';
 import { SvgSprite } from '../../shared/SvgSprite/index.ts';
 
+const optionsMoc = [
+  '+79999999997',
+  '+79999999991',
+  '+79999999992',
+  '+79999999993',
+  '+79999999994',
+  '+79999999995',
+  '+79999999996',
+];
+
 export function Header() {
   const location = useLocation();
 
@@ -11,7 +21,7 @@ export function Header() {
       <div className="px-10">
         <div className="flex items-center gap-3">
           <span className="">Мои номера:</span>
-          <SelectCastum />
+          <SelectCastum options={optionsMoc} />
           <button className="rounded-md bg-white p-2">
             <SvgSprite className="h-6 w-6" name="public-services" />
           </button>

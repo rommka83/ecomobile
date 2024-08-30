@@ -1,2 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface ISelectCastum {}
+export interface ISelectCastum {
+  options: string[];
+  returnOption?: (value: string) => void;
+}

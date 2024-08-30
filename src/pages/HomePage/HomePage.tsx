@@ -1,4 +1,3 @@
-import React from 'react';
 import { IHomePage } from './HomePage.types.ts';
 import { UserInfo } from '../../widgets/UserInfo/UserInfo.tsx';
 import { PackageBalances } from '../../widgets/PackageBalances/PackageBalances.tsx';
